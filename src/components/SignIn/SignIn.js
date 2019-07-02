@@ -20,7 +20,7 @@ function SignIn({onRouteChange}) {
 		      <input className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f3 dib" type="submit" onClick={() => onRouteChange('home')} value="Sign in" />
 		    </div>
 		    <div className="lh-copy mt3">
-		      <p onClick={() => onRouteChange('register')} href="#0" className="f4 link dim black db">Sign up</p>
+		      <p onClick={() => onRouteChange('register')} href="#0" className="f4 link dim black db pointer">Register</p>
 		    </div>
 		  </form>
 		</main>
