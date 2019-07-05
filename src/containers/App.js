@@ -84,7 +84,7 @@ class App extends Component {
       Clarifai.FACE_DETECT_MODEL, this.state.input)
       .then(response => {
         if (response) {
-          fetch('http://localhost:3001/image', {
+          fetch('https://alluring-olympic-95425.herokuapp.com/image', {
             method: 'put',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -122,7 +122,6 @@ class App extends Component {
       { this.state.route === 'home'
       ? <div>
           <Logo />
-          {/*<h1> Face Finder </h1>*/}
           <Rank name={this.state.user.name} entries={this.state.user.entries}/>
           <ImageLinkForm onDetectSubmit={this.onDetectSubmit} onInputChange={this.onInputChange}/>
           <FaceDisplay imageUrl={this.state.imageUrl} box={this.state.box}/>
