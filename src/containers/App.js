@@ -26,16 +26,35 @@ const particleOptions = {
  	}
 }
 
+const initialState = {
+  input: '',
+  imageUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedin: false,
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+}
+
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      box: {},
-      route: 'signin',
-      isSignedin: false
-    }
+    this.state = initialState;
+  }
+
+  loadUser = (data) => {
+    this.setState({user: {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }})
   }
 
   calculateFaceLocation = (data) => {
@@ -52,7 +71,6 @@ class App extends Component {
   }
 
   displayBox = box => {
-    console.log(box);
     this.setState({box: box})
   }
 
@@ -64,15 +82,30 @@ class App extends Component {
     this.setState({imageUrl: this.state.input});
     app.models.predict(
       Clarifai.FACE_DETECT_MODEL, this.state.input)
-      .then(response => this.displayBox(this.calculateFaceLocation(response)))
+      .then(response => {
+        if (response) {
+          fetch('http://localhost:3001/image', {
+            method: 'put',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              id: this.state.user.id
+            })
+          })
+          .then(response => response.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user, {entries: count}))
+          })
+        }
+        this.displayBox(this.calculateFaceLocation(response));
+      })
       .catch(err => console.log(err))
   }
 
   onRouteChange = (route) => {
     if (route === 'signin') {
-      this.setState({isSignedIn: false})
+      this.setState(initialState);
+      this.setState({isSignedIn: false});
     } else if (route === 'home') {
-      console.log('hi')
       this.setState({isSignedIn: true})
     }
     this.setState({route: route});
@@ -90,14 +123,14 @@ class App extends Component {
       ? <div>
           <Logo />
           {/*<h1> Face Finder </h1>*/}
-          <Rank />
+          <Rank name={this.state.user.name} entries={this.state.user.entries}/>
           <ImageLinkForm onDetectSubmit={this.onDetectSubmit} onInputChange={this.onInputChange}/>
           <FaceDisplay imageUrl={this.state.imageUrl} box={this.state.box}/>
         </div>
       : (
           this.state.route === 'signin'
-          ? <SignIn onRouteChange={this.onRouteChange}/>
-          : <Register onRouteChange={this.onRouteChange}/>
+          ? <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
+          : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
         )
       }
   </div>
