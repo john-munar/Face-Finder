@@ -14,7 +14,7 @@ const app = new Clarifai.App({
  apiKey: '306dd2573e244d34b020ee1d376a3850'
 });
 
-const particleOptions = {
+const particleOptions = { // For particle API
   particles: {
   	number: {
   		value: 20,
@@ -26,7 +26,7 @@ const particleOptions = {
  	}
 }
 
-const initialState = {
+const initialState = { // Default state
   input: '',
   imageUrl: '',
   box: {},
@@ -47,7 +47,7 @@ class App extends Component {
     this.state = initialState;
   }
 
-  loadUser = (data) => {
+  loadUser = (data) => { // Loads user from data to state
     this.setState({user: {
       id: data.id,
       name: data.name,
@@ -57,7 +57,7 @@ class App extends Component {
     }})
   }
 
-  calculateFaceLocation = (data) => {
+  calculateFaceLocation = (data) => { // For clarifai API
     const boundingPoints = data.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('imageDisplay')
     const width = Number(image.width);
@@ -70,7 +70,7 @@ class App extends Component {
     }
   }
 
-  displayBox = box => {
+  displayBox = box => { // Passes in box info to box
     this.setState({box: box})
   }
 
@@ -99,6 +99,7 @@ class App extends Component {
         this.displayBox(this.calculateFaceLocation(response));
       })
       .catch(err => console.log(err))
+
   }
 
   onRouteChange = (route) => {
@@ -118,6 +119,7 @@ class App extends Component {
     		className="particles"
         params={particleOptions}
       />
+
       <Navigation onRouteChange={this.onRouteChange} isSignedIn={this.state.isSignedIn}/>
       { this.state.route === 'home'
       ? <div>
@@ -134,7 +136,7 @@ class App extends Component {
       }
   </div>
   );
-}
+  }
 }
 
 export default App;
